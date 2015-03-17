@@ -126,6 +126,7 @@ def testPairings():
 
 
 if __name__ == '__main__':
+    
     testDeleteMatches()
     testDelete()
     testCount()
