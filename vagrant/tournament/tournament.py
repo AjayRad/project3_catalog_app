@@ -11,8 +11,11 @@ DB_NAME = "tournament"
 
 
 def connect(dbname=DB_NAME):
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname="+dbname)
+    """Connect to the PostgreSQL database.  Returns a database connection & cursor."""
+    db = psycopg2.connect("dbname="+dbname)
+    cur = db.cursor()
+                          
+    return db,cur
 
 def db_transact(query,dbname=DB_NAME):
     """ Performs Db transaction: Connects to db, executes query, commits,closes connection.
@@ -21,8 +24,7 @@ def db_transact(query,dbname=DB_NAME):
     db=None
                             
     try:
-        db = connect(dbname)
-        cur = db.cursor()
+        db, cur  = connect(dbname)
         cur.execute(query)
         db.commit()
         return db
@@ -62,8 +64,7 @@ def countPlayers():
     db=None
                             
     try:
-        db = connect(DB_NAME)
-        cur = db.cursor()
+        db, cur = connect(DB_NAME)
         cur.execute(count_q)
         rows = cur.fetchall()
         return int(rows[0][0])
@@ -100,8 +101,7 @@ def registerPlayer(name):
     db=None
                             
     try:
-        db = connect(DB_NAME)
-        cur = db.cursor()
+        db,cur = connect(DB_NAME)
         cur.execute(add_plyr_q,(name,))
         db.commit()
 
@@ -151,14 +151,12 @@ def playerStandings():
     player_stand_list=[]
                             
     try:
-        db = connect(DB_NAME)
-        cur = db.cursor()
+        db, cur = connect(DB_NAME)
         cur.execute(plyr_stnd_q)
         rows = cur.fetchall()
 
-        for row in rows:
-            player_stand_list.append(row)
-        
+        player_stand_list = [ row for row in rows]
+                  
 
         return player_stand_list
 
@@ -195,8 +193,7 @@ def reportMatch(winner, loser):
     db=None
                             
     try:
-        db = connect(DB_NAME)
-        cur = db.cursor()
+        db, cur = connect(DB_NAME)
         cur.execute(match_result_q,(winner,loser))
         db.commit()
 
@@ -232,18 +229,12 @@ def swissPairings():
     """ Steps: get ordered list of players and standings from player_standing method. Then transform """
 
     standings = playerStandings()
-    pair_result = []
+    
 
     if len(standings) % 2 != 0:
         raise KeyError("Need even number of players for pairing.")
 
-    for i in xrange(0,len(standings),2):
-        player1_id = standings[i][0]
-        player1_name = standings[i][1]
-        player2_id = standings[i+1][0]
-        player2_name = standings[i+1][1]
-        pair_result.append((player1_id,player1_name,player2_id,player2_name))
-
+    pair_result = [(standings[i][0],standings[i][1],standings[i+1][0],standings[i+1][1]) for i  in xrange(0,len(standings),2)]
 
     return pair_result
         
