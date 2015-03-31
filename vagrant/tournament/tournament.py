@@ -9,21 +9,17 @@ import sys
 
 DB_NAME = "tournament"
 
-
 def connect(dbname=DB_NAME):
     """Connect to the PostgreSQL database.  Returns a database connection & associated cursor."""
-
     db = psycopg2.connect("dbname="+dbname)
-    cur = db.cursor()
-                          
+    cur = db.cursor()                      
     return db,cur
 
 def db_transact(query,dbname=DB_NAME):
     """ Performs Db transaction: Connects to db, executes query, commits,closes connection.
         Returns db object. """
 
-    db=None
-                            
+    db=None                            
     try:
         db, cur  = connect(dbname)
         cur.execute(query)
@@ -31,10 +27,8 @@ def db_transact(query,dbname=DB_NAME):
         return db
 
     except psycopg2.DatabaseError, e:
-
         if db:
-            db.rollback()
-            
+            db.rollback()            
         print 'DB error...rolled back %s' % e
         sys.exit(1)
 
@@ -58,8 +52,7 @@ def countPlayers():
     """Returns the number of players currently registered."""
 
     count_q = ' SELECT COUNT(player_id) FROM players '
-    db=None
-                            
+    db=None                            
     try:
         db, cur = connect(DB_NAME)
         cur.execute(count_q)
@@ -67,10 +60,8 @@ def countPlayers():
         return int(rows[0][0])
 
     except psycopg2.DatabaseError, e:
-
         if db:
-            db.rollback()
-            
+            db.rollback()            
         print 'DB error...rolled back %s' % e
         sys.exit(1)
 
