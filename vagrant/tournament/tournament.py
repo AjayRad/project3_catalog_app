@@ -11,7 +11,8 @@ DB_NAME = "tournament"
 
 
 def connect(dbname=DB_NAME):
-    """Connect to the PostgreSQL database.  Returns a database connection & cursor."""
+    """Connect to the PostgreSQL database.  Returns a database connection & associated cursor."""
+
     db = psycopg2.connect("dbname="+dbname)
     cur = db.cursor()
                           
@@ -40,10 +41,6 @@ def db_transact(query,dbname=DB_NAME):
     finally:
         if db:
             db.close()
-            
-                            
-    
-
 
 def deleteMatches():
     """Remove all the match records from the database."""
@@ -59,8 +56,8 @@ def deletePlayers():
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    count_q = ' SELECT COUNT(player_id) FROM players '
 
+    count_q = ' SELECT COUNT(player_id) FROM players '
     db=None
                             
     try:
@@ -82,10 +79,6 @@ def countPlayers():
             db.close()
             
 
-    
-    
-
-
 def registerPlayer(name):
     """Adds a player to the tournament database.
   
@@ -95,9 +88,11 @@ def registerPlayer(name):
       name: the player's full name (need not be unique).
     """
 
+    #Pass input thru Bleach. Bleach is an HTML sanitizing library that escapes or strips markup and attributes based on a white list
+    #Insert player's name into players table in tournament DB.
+
     name = bleach.clean(name)
     add_plyr_q = 'INSERT INTO players (player_name) VALUES (%s)'
-
     db=None
                             
     try:
@@ -106,10 +101,8 @@ def registerPlayer(name):
         db.commit()
 
     except psycopg2.DatabaseError, e:
-
         if db:
-            db.rollback()
-            
+            db.rollback()            
         print 'DB error...rolled back %s' % e
         sys.exit(1)
 
@@ -117,7 +110,6 @@ def registerPlayer(name):
         if db:
             db.close()
     
-
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
@@ -133,14 +125,12 @@ def playerStandings():
         matches: the number of matches the player has played
     """
 
-    """ use the Views created to fetch the wins, loss. Then JOIN to get total.
-        Query uses postgres feature Common table expressions (CTE) for ease of use
-        Query uses COALESCE to substitute a default value for null values
+    #Use the Views created on table MATCHES to fetch the wins, loss. The Views group winners and losers from MATCHES table.
+    #JOIN the two Views to get total.
+    #Query uses postgres feature Common table expressions (CTE) for ease of use
+    #Query uses COALESCE to substitute a default value for null values
 
-
-    """
-
-
+    
     plyr_stnd_q = ''' WITH player_standing AS (
                         SELECT COALESCE(win_player_id, lose_player_id) player_id, COALESCE(wins,0) wins, COALESCE(loss,0) loss, COALESCE(wins,0)+COALESCE(loss,0) total 
                         from winners FULL OUTER JOIN losers on win_player_id = lose_player_id )SELECT  players.player_id,player_name, COALESCE(wins,0) matches_won ,
@@ -154,27 +144,19 @@ def playerStandings():
         db, cur = connect(DB_NAME)
         cur.execute(plyr_stnd_q)
         rows = cur.fetchall()
-
-        player_stand_list = [ row for row in rows]
-                  
+        player_stand_list = [ row for row in rows]               
 
         return player_stand_list
 
     except psycopg2.DatabaseError, e:
-
         if db:
-            db.rollback()
-            
+            db.rollback()            
         print 'DB error...rolled back %s' % e
         sys.exit(1)
 
     finally:
         if db:
-            db.close()
-            
-
-
-    
+            db.close()            
 
 
 def reportMatch(winner, loser):
@@ -183,13 +165,12 @@ def reportMatch(winner, loser):
     Args:
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
-    """
+      
+    """    
 
-    
+    #Inserts into MATCHES table the player details passed in args
 
-    
     match_result_q = 'INSERT INTO matches (win_player_id,lose_player_id) VALUES (%s,%s)'
-
     db=None
                             
     try:
@@ -200,8 +181,7 @@ def reportMatch(winner, loser):
     except psycopg2.DatabaseError, e:
 
         if db:
-            db.rollback()
-            
+            db.rollback()           
         print 'DB error...rolled back %s' % e
         sys.exit(1)
 
@@ -226,15 +206,17 @@ def swissPairings():
         name2: the second player's name
     """
 
-    """ Steps: get ordered list of players and standings from player_standing method. Then transform """
+    #get ordered list of players and standings from player_standing method. 
 
     standings = playerStandings()
-    
+
+    #Check if number of players registered is even. Else error out 
 
     if len(standings) % 2 != 0:
-        raise KeyError("Need even number of players for pairing.")
+        raise Exception("Need even number of players for pairing.")
 
-    pair_result = [(standings[i][0],standings[i][1],standings[i+1][0],standings[i+1][1]) for i  in xrange(0,len(standings),2)]
+    #Transform ordered list returned by playerStandings() 
+    pair_result = [(standings[i][0],standings[i][1],standings[i+1][0],standings[i+1][1]) for i in xrange(0,len(standings),2)]
 
     return pair_result
         
