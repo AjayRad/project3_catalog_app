@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+     <p>{{products|count}} Items</p>
+    {% for product in products %}
+    <div><p>
+    	<li> <a href ='/catalog/{{product.prdcat_id}}/products/{{product.id}}' > {{product.prdname}} </a> </li>
+    </p> </div>
+    {% endfor %}
+    <br><a href ='/catalog/{{products[0].prdcat_id}}/products/add' >Add New Products </a>
+    
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Add New Product </h1>
+    <form method='POST' enctype='multipart/form-data' action='/catalog/{{category_id}}/products/add'>
+    	<label>Product Title</label>
+    	<br><input name="name" type="text" value="Product title here" >
+    	<br>
+    	<br><label>Product Description</label>
+    	<br><input name="prd_desc" type="text" value="Product desc here" >
+    	<br>
+    	<br><label>Price</label>
+    	<br><input name="price" type="text" value="Product price here" >
+    	<br>
+    	<br><input type="submit" value="Add Product"> 
+    </form>
+     <a href = "{{url_for('products_by_catg', category_id=category_id)}}"> Cancel </a>
+
+{% endblock %}

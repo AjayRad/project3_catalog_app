@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for product in product_details %}
+    <div><p>
+    	<li> Item : {{product.prdname}} </li>
+    	<li>Description: {{product.prd_desc}}</li>
+    	<li>Price: {{product.price}} $ </li>
+    	<br><a href ='/catalog/{{product.prdcat_id}}/products/{{product.id}}/edit' >Edit </a>
+    	<span> &nbsp|&nbsp </span>
+    	<a href ='/catalog/{{product.prdcat_id}}/products/{{product.id}}/delete' > Delete </a>
+    </p> </div>
+    {% endfor %}
+    
+{% endblock %}

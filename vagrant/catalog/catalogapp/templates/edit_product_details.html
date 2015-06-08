@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Update Product Details</h1>
+    <form method='POST' enctype='multipart/form-data' action='/catalog/{{category_id}}/products/{{product_id}}/edit'>
+    	<label>Product Title</label>
+    	<br><input name="name" type="text" value="updated title here" >
+    	<br>
+    	<br><label>Product Description</label>
+    	<br><input name="prd_desc" type="text" value="updated desc here" >
+    	<br>
+    	<br><label>Price</label>
+    	<br><input name="price" type="text" value="updated price here" >
+    	<br>
+    	<br><input type="submit" value="Update"> 
+    </form>
+     <a href = "{{ url_for('get_product_details', category_id=category_id, product_id=product_id)}}"> Cancel </a>
+
+{% endblock %}
