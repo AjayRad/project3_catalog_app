@@ -39,6 +39,17 @@ class ProdItem(Base):
         r = '<Product {:d} {} {}>'
         return r.format(self.id, self.prd_desc, self.price)
 
+    @property
+    def serialize(self):
+
+        return {
+            'name': self.prdname,
+            'description': self.prd_desc,
+            'id': self.id,
+            'price': self.price,
+            'Instock': self.num_in_stock,
+        }
+
 
 class User(UserMixin, Base):
     __tablename__ = 'users'

@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect, flash
+from flask import render_template, url_for, request, redirect, flash, jsonify
 from flask.ext.login import login_user, logout_user, login_required
 from flask.ext.login import current_user, LoginManager
 from catalogapp import app
@@ -19,7 +19,7 @@ def load_user(id):
 @app.route('/')
 @app.route('/index')
 @app.route('/catalog')
-def get_catalog():
+def get_categories():
     all_categories = catalog_dao.get_all_categories()
     return render_template("index.html",
                            title='Product Catalog',
@@ -41,7 +41,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('get_catalog'))
+    return redirect(url_for('get_categories'))
 
 
 @app.route('/authorize/<provider>')
@@ -64,7 +64,7 @@ def oauth_callback(provider):
     if social_id is None or email is None:
         # I need a valid email address for my user identification
         flash('Authentication failed.')
-        return redirect(url_for('get_catalog'))
+        return redirect(url_for('get_categories'))
     # Look if the user already exists
     user = catalog_dao.get_user(email)
     if not user:
@@ -80,7 +80,7 @@ def oauth_callback(provider):
     # Log in the user, by default remembering them for their next visit
     # unless they log out.
     login_user(user, remember=True)
-    return redirect(url_for('get_catalog'))
+    return redirect(url_for('get_categories'))
 
 
 @app.route('/catalog/<int:category_id>/products')
@@ -153,3 +153,17 @@ def del_product_details(category_id, product_id):
     else:
         return (render_template('del_product_details.html',
                 category_id=category_id, product_id=product_id))
+
+
+# JSON endpoint for all categories
+@app.route('/catalog/categories/JSON')
+def get_categoriesjson():
+    all_categories = catalog_dao.get_all_categories()
+    return jsonify(Categories=[i.serialize for i in all_categories])
+
+
+# JSON endpoint for all products within a category_id
+@app.route('/catalog/<int:category_id>/products/JSON')
+def products_by_catgjson(category_id):
+    products = catalog_dao.get_products_by_catg(category_id)
+    return jsonify(ProductItems=[i.serialize for i in products])
