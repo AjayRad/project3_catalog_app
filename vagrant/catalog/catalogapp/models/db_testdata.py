@@ -2,8 +2,8 @@
 # from sqlalchemy.orm import sessionmaker
 from dbsetup import ProdCat, Base, ProdItem, User
 from catalog_dao import get_all_categories, get_catg_by_id, get_products_by_catg, get_all_users
-
 '''
+
 engine = create_engine('sqlite:///catalog.db')
 
 Base.metadata.bind = engine
@@ -31,7 +31,7 @@ session.add(new_ProdCat3)
 session.commit()
 print "added new product category"
 
-new_user = User(social_id="tst1234", nickname="tst1234", email="test@yahoo.com")
+new_user = User(social_id="tst123", nickname="tst123", email="test@yahoo.com")
 session.add(new_user)
 session.commit()
 print "added new tst user"

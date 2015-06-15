@@ -58,6 +58,7 @@ class User(UserMixin, Base):
     nickname = Column(String(64), nullable=False)
     email = Column(String(64), nullable=True)
 
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('sqlite:///catalogapp/models/catalog.db')
+# engine = create_engine('sqlite:///catalog.db')
 
 Base.metadata.create_all(engine)

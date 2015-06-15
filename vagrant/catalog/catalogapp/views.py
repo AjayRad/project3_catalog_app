@@ -86,7 +86,8 @@ def oauth_callback(provider):
 @app.route('/catalog/<int:category_id>/products')
 def products_by_catg(category_id):
     products = catalog_dao.get_products_by_catg(category_id)
-    return render_template('products.html', products=products)
+    all_categories = catalog_dao.get_all_categories()
+    return render_template('products.html', products=products,all_categories=all_categories)
 
 
 @app.route('/catalog/<int:category_id>/products/add',
@@ -114,8 +115,10 @@ def add_product(category_id):
 @app.route('/catalog/<int:category_id>/products/<int:product_id>')
 def get_product_details(category_id, product_id):
     product_details = catalog_dao.get_product_details(category_id, product_id)
+    all_categories = catalog_dao.get_all_categories()
     return (render_template('product_details.html',
-            product_details=product_details))
+            product_details=product_details,
+            all_categories=all_categories))
 
 
 @app.route('/catalog/<int:category_id>/products/<int:product_id>/edit',
