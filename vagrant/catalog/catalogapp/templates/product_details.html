@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
     {% for product in product_details %}
-    <div><p>
-    	<li> Item : {{product.prdname}} </li>
-    	<li>Description: {{product.prd_desc}}</li>
-    	<li>Price: {{product.price}} $ </li>
+    <div>
+        <ul class="list-group">
+            <li class="list-group-item" > Item : {{product.prdname}} </li>
+            <li class="list-group-item">Description: {{product.prd_desc}}</li>
+            <li class="list-group-item">Price: {{product.price}} $ </li>
+        </ul>
     	<br><a href ='/catalog/{{product.prdcat_id}}/products/{{product.id}}/edit' >Edit </a>
     	<span> &nbsp|&nbsp </span>
     	<a href ='/catalog/{{product.prdcat_id}}/products/{{product.id}}/delete' > Delete </a>

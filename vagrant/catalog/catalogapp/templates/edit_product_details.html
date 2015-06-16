@@ -1,18 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Update Product Details</h1>
-    <form method='POST' enctype='multipart/form-data' action='/catalog/{{category_id}}/products/{{product_id}}/edit'>
-    	<label>Product Title</label>
-    	<br><input name="name" type="text" value="updated title here" >
-    	<br>
-    	<br><label>Product Description</label>
-    	<br><input name="prd_desc" type="text" value="updated desc here" >
-    	<br>
-    	<br><label>Price</label>
-    	<br><input name="price" type="text" value="updated price here" >
-    	<br>
-    	<br><input type="submit" value="Update"> 
+
+<div class="container">
+    <h2> Edit Product Details </h2>
+    <form class="form-horizontal pull-left" role="form" method='POST' enctype='multipart/form-data' action='/catalog/{{category_id}}/products/{{product_id}}/edit'>
+    
+        <div class="form-group">
+            <label for="inputTitle" class="col-sm-3 control-label">Product Title</label>
+            <div class="col-md-9">
+            <input name="name" type="text" class="form-control" id="inputTitle" placeholder="Updated Title">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputDesc" class="col-sm-3 control-label">Product Description</label>
+            <div class="col-md-9">
+            <input name="prd_desc" type="text" class="form-control" id="inputDesc" placeholder="Updated Desc">
+            </div>
+        </div>
+        <div class="form-group">    
+            <label for="inputPrice" class="col-sm-3 control-label">Price(in $)</label>
+            <div class="col-md-3">
+            <input name="price" type="text" class="form-control" id="inputPrice" placeholder="Updated Price">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-6">
+            <button class="btn btn-md btn-success btn-block" type="submit">Update Product</button>
+            <br><a href = "{{ url_for('get_product_details', category_id=category_id, product_id=product_id)}}"> Cancel </a>
+            </div>
+        </div>
     </form>
-     <a href = "{{ url_for('get_product_details', category_id=category_id, product_id=product_id)}}"> Cancel </a>
+</div>
 
 {% endblock %}
