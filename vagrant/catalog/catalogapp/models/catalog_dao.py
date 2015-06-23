@@ -69,21 +69,25 @@ def get_product_details(category_id, product_id):
 
 def update_product_details(category_id, product_id,
                            product_name_new, product_desc_new,
-                           product_price_new):
+                           product_price_new, product_feat_new=None):
     session = db_init()
     cur_product_det = (session.query(ProdItem).
                        filter(ProdItem.id == product_id
                               and ProdItem.prdcat_id == category_id).first())
+    print "in update dao", cur_product_det.featured
     if product_name_new is not None:
         cur_product_det.prdname = product_name_new
     if product_desc_new is not None:
         cur_product_det.prd_desc = product_desc_new
     if product_price_new is not None:
         cur_product_det.price = product_price_new
+    if product_feat_new is not None:
+        cur_product_det.featured = product_feat_new
     success = True
     try:
         session.commit()
     except Exception as e:
+        print "db error", e
         session.rollback()
         session.flush()
         success = False
@@ -91,16 +95,18 @@ def update_product_details(category_id, product_id,
 
 
 def add_product(category_id, product_name_new, product_desc_new,
-                product_price_new):
+                product_price_new, product_feat_new=None):
     session = db_init()
     new_product = ProdItem(prdname=product_name_new, prd_desc=product_desc_new,
                            price=product_price_new, num_in_stock=1,
+                           featured=product_feat_new,
                            prdcat_id=category_id)
     session.add(new_product)
     success = True
     try:
         session.commit()
     except Exception as e:
+        print"db error", e
         session.rollback()
         session.flush()
         success = False
@@ -140,7 +146,6 @@ def get_user_by_id(id):
 
 
 def add_user(social_id, nickname, email):
-    print "in add user"
     print nickname, email
     session = db_init()
     new_user = User(social_id=social_id, nickname=nickname, email=email)

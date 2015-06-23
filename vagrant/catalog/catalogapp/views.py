@@ -31,7 +31,7 @@ def has_permission(func_check):
         print"owner_id", category_details.owner_id
         if category_details.owner_id != int(current_user.get_id()):
             flash('Only category owners can add/update/delete products .')
-            flash('If you think this is in error, please contact admin@bas.com')
+            flash('For permission, please contact admin@bas.com')
             return redirect(url_for('get_categories'))
         else:
             return func_check(*args, **kwargs)
@@ -127,6 +127,10 @@ def products_by_catg(category_id):
 @login_required
 @has_permission
 def add_product(category_id):
+    product_feat_new = None
+    product_name_new = None
+    product_desc_new = None
+    product_price_new = None
     if request.method == 'POST':
         if request.form['name']:
             product_name_new = request.form['name']
@@ -134,12 +138,18 @@ def add_product(category_id):
             product_desc_new = request.form['prd_desc']
         if request.form['price']:
             product_price_new = request.form['price']
+        if request.form['feat']:
+            product_feat_new = (True if request.form['feat'] == 'True'
+                                else False)
         success = (catalog_dao.add_product(category_id,
-                   product_name_new, product_desc_new, product_price_new))
+                   product_name_new, product_desc_new, product_price_new,
+                   product_feat_new))
         if success:
             flash(" Success ! : Product Added ")
-            return (redirect(url_for('products_by_catg',
-                    category_id=category_id)))
+        else:
+            flash("OOPS! did not add product. db error. Contact admin")
+        return (redirect(url_for('products_by_catg',
+                                 category_id=category_id)))
     else:
         return (render_template('add_product.html',
                 category_id=category_id))
@@ -159,6 +169,7 @@ def get_product_details(category_id, product_id):
 @login_required
 @has_permission
 def edit_product_details(category_id, product_id):
+    product_feat_new = None
     product_name_new = None
     product_desc_new = None
     product_price_new = None
@@ -169,12 +180,19 @@ def edit_product_details(category_id, product_id):
             product_desc_new = request.form['prd_desc']
         if request.form['price']:
             product_price_new = request.form['price']
+        if request.form['feat']:
+            product_feat_new = (True if request.form['feat'] == 'True'
+                                else False)
         success = (catalog_dao.update_product_details(category_id, product_id,
-                   product_name_new, product_desc_new, product_price_new))
+                   product_name_new, product_desc_new, product_price_new,
+                   product_feat_new))
         if success:
             flash(" Success ! : Product Updated ")
-            return (redirect(url_for('get_product_details',
-                    category_id=category_id, product_id=product_id)))
+        else:
+            flash(" OOPS!Did not update: Db error. Please contact admin")
+        return (redirect(url_for('get_product_details',
+                                 category_id=category_id,
+                                 product_id=product_id)))
     else:
         return (render_template('edit_product_details.html',
                 category_id=category_id, product_id=product_id))
