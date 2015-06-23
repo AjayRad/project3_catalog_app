@@ -1,10 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dbsetup import ProdCat, Base, ProdItem, User
+from flask import current_app
 
 
 def db_init():
-    engine = create_engine('sqlite:///catalogapp/models/catalog.db')
+    db_location = current_app.config['SQLALCHEMY_DATABASE_URI']
+    engine = create_engine(db_location)
+    # engine = create_engine('sqlite:///catalogapp/models/catalog.db')
     # engine = create_engine('sqlite:///catalog.db')
     Base.metadata.bind = engine
     dbsession = sessionmaker(bind=engine)
@@ -20,12 +23,15 @@ def db_init():
 
 
 def get_all_categories():
+    ''' returns all categories in db '''
     session1 = db_init()
     all_categories = session1.query(ProdCat).all()
     return all_categories
 
 
 def get_catg_by_id(category_id):
+    '''input parameter: category_id
+    Returns category details in given category_id  '''
     session2 = db_init()
     category_details = (session2.query(ProdCat).
                         filter(ProdCat.id == category_id).first())
@@ -33,6 +39,8 @@ def get_catg_by_id(category_id):
 
 
 def get_products_by_catg(category_id):
+    '''input parameter: category_id
+    Returns all products in category  '''
     session = db_init()
     category_details = get_catg_by_id(category_id)
     products = (session.query(ProdItem).
@@ -40,7 +48,18 @@ def get_products_by_catg(category_id):
     return products
 
 
+def get_featured_products(is_feat):
+    '''input parameter: boolean values True or False
+    Returns 10 featured or not featured products across all categories '''
+    session = db_init()
+    products = (session.query(ProdItem).
+                filter(ProdItem.featured == is_feat).limit(10))
+    return products
+
+
 def get_product_details(category_id, product_id):
+    '''input parameter: category_id, product_id
+    Returns all product details for a category/product_id combo  '''
     session = db_init()
     product_details = (session.query(ProdItem).
                        filter(ProdItem.id == product_id and ProdItem.prdcat_id
@@ -55,9 +74,12 @@ def update_product_details(category_id, product_id,
     cur_product_det = (session.query(ProdItem).
                        filter(ProdItem.id == product_id
                               and ProdItem.prdcat_id == category_id).first())
-    cur_product_det.prdname = product_name_new
-    cur_product_det.prd_desc = product_desc_new
-    cur_product_det.price = product_price_new
+    if product_name_new is not None:
+        cur_product_det.prdname = product_name_new
+    if product_desc_new is not None:
+        cur_product_det.prd_desc = product_desc_new
+    if product_price_new is not None:
+        cur_product_det.price = product_price_new
     success = True
     try:
         session.commit()

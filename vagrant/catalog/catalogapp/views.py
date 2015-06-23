@@ -4,6 +4,7 @@ from flask.ext.login import current_user, LoginManager
 from catalogapp import app
 from models import catalog_dao
 from oauth import OAuthSignIn
+from functools import wraps
 
 
 lm = LoginManager()
@@ -16,25 +17,54 @@ def load_user(id):
     return catalog_dao.get_user_by_id(int(id))
 
 
+def has_permission(func_check):
+    """
+    decorator checks whether user has permission to add/update/del
+    products in a category
+    """
+    @wraps(func_check)
+    def wrapped_f(*args, **kwargs):
+        category_id = kwargs['category_id']
+        print "entering wrapped_f, category_id", category_id
+        print "user", current_user.get_id()
+        category_details = catalog_dao.get_catg_by_id(category_id)
+        print"owner_id", category_details.owner_id
+        if category_details.owner_id != int(current_user.get_id()):
+            flash('Only category owners can add/update/delete products .')
+            flash('If you think this is in error, please contact admin@bas.com')
+            return redirect(url_for('get_categories'))
+        else:
+            return func_check(*args, **kwargs)
+        print "after func_check(args)"
+    return wrapped_f
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('Err_404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('Err_500.html'), 500
+
+
 @app.route('/')
 @app.route('/index')
 @app.route('/catalog')
 def get_categories():
     all_categories = catalog_dao.get_all_categories()
+    is_feat = True
+    products = catalog_dao.get_featured_products(is_feat)
     return render_template("index.html",
                            title='Product Catalog',
+                           products=products,
                            all_categories=all_categories)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # g is Flask's global object
-    # if g.user is not None and g.user.is_authenticated():
-    #   return redirect(url_for('index'))
-    # if current_user is not None and current_user.is_authenticated():
-    #    return redirect(url_for('get_catalog'))
-    return render_template('base.html',
-                           title='Sign In')
+    return redirect(url_for('get_categories'))
 
 
 @app.route('/logout')
@@ -87,12 +117,15 @@ def oauth_callback(provider):
 def products_by_catg(category_id):
     products = catalog_dao.get_products_by_catg(category_id)
     all_categories = catalog_dao.get_all_categories()
-    return render_template('products.html', products=products,all_categories=all_categories)
+    return render_template('products.html',
+                           products=products,
+                           all_categories=all_categories)
 
 
 @app.route('/catalog/<int:category_id>/products/add',
            methods=['GET', 'POST'])
 @login_required
+@has_permission
 def add_product(category_id):
     if request.method == 'POST':
         if request.form['name']:
@@ -124,7 +157,11 @@ def get_product_details(category_id, product_id):
 @app.route('/catalog/<int:category_id>/products/<int:product_id>/edit',
            methods=['GET', 'POST'])
 @login_required
+@has_permission
 def edit_product_details(category_id, product_id):
+    product_name_new = None
+    product_desc_new = None
+    product_price_new = None
     if request.method == 'POST':
         if request.form['name']:
             product_name_new = request.form['name']
@@ -146,6 +183,7 @@ def edit_product_details(category_id, product_id):
 @app.route('/catalog/<int:category_id>/products/<int:product_id>/delete',
            methods=['GET', 'POST'])
 @login_required
+@has_permission
 def del_product_details(category_id, product_id):
     if request.method == 'POST':
         success = catalog_dao.del_product_details(category_id, product_id)

@@ -1,10 +1,19 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from flask.ext.login import UserMixin
+from config import SQLALCHEMY_DATABASE_URI
 
 Base = declarative_base()
+
+
+class User(UserMixin, Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    social_id = Column(String(64), nullable=False, unique=True)
+    nickname = Column(String(64), nullable=False)
+    email = Column(String(64), nullable=True)
 
 
 class ProdCat(Base):
@@ -13,6 +22,8 @@ class ProdCat(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     desc = Column(String(250))
+    owner_id = Column(Integer, ForeignKey('users.id'))
+    users = relationship(User)
 
     @property
     def serialize(self):
@@ -32,6 +43,7 @@ class ProdItem(Base):
     prd_desc = Column(String(250))
     price = Column(Float)
     num_in_stock = Column(Integer)
+    featured = Column(Boolean, default=False)
     prdcat_id = Column(Integer, ForeignKey('prod_category.id'))
     prod_category = relationship(ProdCat)
 
@@ -48,17 +60,12 @@ class ProdItem(Base):
             'id': self.id,
             'price': self.price,
             'Instock': self.num_in_stock,
+            'Featured': self.featured,
         }
 
 
-class User(UserMixin, Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    social_id = Column(String(64), nullable=False, unique=True)
-    nickname = Column(String(64), nullable=False)
-    email = Column(String(64), nullable=True)
-
-engine = create_engine('sqlite:///catalogapp/models/catalog.db')
+# engine = create_engine('sqlite:///catalogapp/models/catalog.db')
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
 # engine = create_engine('sqlite:///catalog.db')
 
 Base.metadata.create_all(engine)

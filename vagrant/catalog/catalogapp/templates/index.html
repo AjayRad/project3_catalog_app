@@ -2,33 +2,9 @@
 {% block content %}
 <div class="jumbotron">
   <h2>Featured Items </h2>
-  <p>...</p>
-  <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+      <ul class="list-group">
+        {% for product in products %}   
+      <li class="list-group-item"> <a href ='/catalog/{{product.prdcat_id}}/products/{{product.id}}' > {{product.prdname}} </a> </li>
+      {% endfor %}
 </div>
-<!--
-    <div class="container">
-        <div class="row">
-          <div class="span3 bs-docs-sidebar">
-              <ul class="nav nav-list bs-docs-sidenav affix-top" data-spy="affix" data-offset-top="100">                
-                    {% for category in all_categories %}
-                        <li class="active"><a href='/catalog/{{category.id}}/products'><i class="icon-chevron-right"></i>{{category.name}}</a></li>
-                    {% endfor %}
-                    
-              </ul>
-
-           </div>
-        </div>
-    </div>
-<div class="container">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="list-group">
-                {% for category in all_categories %}
-      	             <a href="/catalog/{{category.id}}/products" class="list-group-item active"><p class="list-group-item-text">{{ category.name}}</p></a>
-            {% endfor %}
- 	      </div>
-        </div>
-    </div>
-</div> 
--->
 {% endblock%}
