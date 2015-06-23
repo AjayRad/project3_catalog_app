@@ -68,13 +68,15 @@ def get_product_details(category_id, product_id):
 
 
 def update_product_details(category_id, product_id,
-                           product_name_new, product_desc_new,
-                           product_price_new, product_feat_new=None):
+                           product_name_new=None, product_desc_new=None,
+                           product_price_new=None, product_feat_new=None):
+    '''mandatory input parameter: category_id, product_id.
+    Optional parameters include other product details.
+    SQLAlchemy query updates product details for the given product_id  '''
     session = db_init()
     cur_product_det = (session.query(ProdItem).
                        filter(ProdItem.id == product_id
                               and ProdItem.prdcat_id == category_id).first())
-    print "in update dao", cur_product_det.featured
     if product_name_new is not None:
         cur_product_det.prdname = product_name_new
     if product_desc_new is not None:
@@ -85,17 +87,22 @@ def update_product_details(category_id, product_id,
         cur_product_det.featured = product_feat_new
     success = True
     try:
+        # Commit updates to DB
         session.commit()
     except Exception as e:
         print "db error", e
+        # rollback updates if commit fails
         session.rollback()
         session.flush()
         success = False
     return success
 
 
-def add_product(category_id, product_name_new, product_desc_new,
-                product_price_new, product_feat_new=None):
+def add_product(category_id, product_name_new, product_desc_new=None,
+                product_price_new=None, product_feat_new=None):
+    '''mandatory input parameter: category_id, new product name.
+    Optional parameters include other product details.
+    SQLAlchemy query adds new product to prod_item table.  '''
     session = db_init()
     new_product = ProdItem(prdname=product_name_new, prd_desc=product_desc_new,
                            price=product_price_new, num_in_stock=1,
@@ -104,9 +111,11 @@ def add_product(category_id, product_name_new, product_desc_new,
     session.add(new_product)
     success = True
     try:
+        # Commit changes to DB
         session.commit()
     except Exception as e:
         print"db error", e
+        # If commit fails, rollback changes from DB
         session.rollback()
         session.flush()
         success = False
@@ -114,13 +123,17 @@ def add_product(category_id, product_name_new, product_desc_new,
 
 
 def del_product_details(category_id, product_id):
+    '''mandatory input parameter: category_id, product_id.
+    SQLAlchemy query deletes product from prod_item table.  '''
     session = db_init()
     session.query(ProdItem).filter(ProdItem.id == product_id and
                                    ProdItem.prdcat_id == category_id).delete(synchronize_session=False)
     success = True
     try:
+        # Commit changes to DB
         session.commit()
     except Exception as e:
+        # if commit fails, rollback changes from DB
         session.rollback()
         session.flush()
         success = False

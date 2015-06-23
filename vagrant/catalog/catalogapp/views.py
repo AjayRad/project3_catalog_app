@@ -25,20 +25,17 @@ def has_permission(func_check):
     @wraps(func_check)
     def wrapped_f(*args, **kwargs):
         category_id = kwargs['category_id']
-        print "entering wrapped_f, category_id", category_id
-        print "user", current_user.get_id()
         category_details = catalog_dao.get_catg_by_id(category_id)
-        print"owner_id", category_details.owner_id
         if category_details.owner_id != int(current_user.get_id()):
             flash('Only category owners can add/update/delete products .')
             flash('For permission, please contact admin@bas.com')
             return redirect(url_for('get_categories'))
         else:
             return func_check(*args, **kwargs)
-        print "after func_check(args)"
     return wrapped_f
 
 
+# Flasks error handler decorators
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('Err_404.html'), 404
@@ -53,6 +50,8 @@ def internal_error(error):
 @app.route('/index')
 @app.route('/catalog')
 def get_categories():
+    ''' main index page;
+    gets & renders all categories & featured product from DB.'''
     all_categories = catalog_dao.get_all_categories()
     is_feat = True
     products = catalog_dao.get_featured_products(is_feat)
@@ -78,7 +77,7 @@ def logout():
 def oauth_authorize(provider):
     # Flask-Login function
     if not current_user.is_anonymous():
-        return redirect(url_for('index'))
+        return redirect(url_for('get_categories'))
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
 
@@ -86,13 +85,13 @@ def oauth_authorize(provider):
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
     if not current_user.is_anonymous():
-        return redirect(url_for('index'))
+        return redirect(url_for('get_categories'))
     oauth = OAuthSignIn.get_provider(provider)
     social_id, username, email = oauth.callback()
     print social_id
     print email
     if social_id is None or email is None:
-        # I need a valid email address for my user identification
+        # Need a valid email address for my user identification
         flash('Authentication failed.')
         return redirect(url_for('get_categories'))
     # Look if the user already exists
@@ -115,6 +114,8 @@ def oauth_callback(provider):
 
 @app.route('/catalog/<int:category_id>/products')
 def products_by_catg(category_id):
+    ''' get & render product for a particular categoty.
+    Input needed: category_id'''
     products = catalog_dao.get_products_by_catg(category_id)
     all_categories = catalog_dao.get_all_categories()
     return render_template('products.html',
@@ -127,10 +128,16 @@ def products_by_catg(category_id):
 @login_required
 @has_permission
 def add_product(category_id):
+    ''' Allows user to add products for a category.
+    User needs to be logged in. And
+    have permissions for that category i.e. (be the category owner).
+    both checks implemented using decorators.
+    Input param : category_id '''
     product_feat_new = None
     product_name_new = None
     product_desc_new = None
     product_price_new = None
+    # Capture product details entered on form
     if request.method == 'POST':
         if request.form['name']:
             product_name_new = request.form['name']
@@ -141,6 +148,7 @@ def add_product(category_id):
         if request.form['feat']:
             product_feat_new = (True if request.form['feat'] == 'True'
                                 else False)
+        # Call add query in catalog_dao with given data
         success = (catalog_dao.add_product(category_id,
                    product_name_new, product_desc_new, product_price_new,
                    product_feat_new))
@@ -169,10 +177,16 @@ def get_product_details(category_id, product_id):
 @login_required
 @has_permission
 def edit_product_details(category_id, product_id):
+    ''' Allows user to edit product details.
+    User needs to be logged in. And
+    have permissions for that category i.e. (be the category owner).
+    both checks implemented using decorators.
+    Input param : category_id , product_id'''
     product_feat_new = None
     product_name_new = None
     product_desc_new = None
     product_price_new = None
+    # Capture product details from form
     if request.method == 'POST':
         if request.form['name']:
             product_name_new = request.form['name']
@@ -183,6 +197,7 @@ def edit_product_details(category_id, product_id):
         if request.form['feat']:
             product_feat_new = (True if request.form['feat'] == 'True'
                                 else False)
+        # call update methods in catalog_dao
         success = (catalog_dao.update_product_details(category_id, product_id,
                    product_name_new, product_desc_new, product_price_new,
                    product_feat_new))
@@ -203,6 +218,11 @@ def edit_product_details(category_id, product_id):
 @login_required
 @has_permission
 def del_product_details(category_id, product_id):
+    ''' Allows user to delete products for a category.
+    User needs to be logged in. And
+    have permissions for that category i.e. (be the category owner).
+    both checks implemented using decorators.
+    Input param : category_id, product_id '''
     if request.method == 'POST':
         success = catalog_dao.del_product_details(category_id, product_id)
         if success:
