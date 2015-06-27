@@ -14,8 +14,9 @@ Simple catalog CRUD app with Flask
 3. Connect to the virtual machine: `vagrant ssh`.
 4. Obtain your own Google or FB API keys by registering a new application
 5. Update config file with required Client id and secret.
-6. Navigate to the catalog directory: `cd /vagrant/catalog`
-7. Start the server: `python run.py`. [Note: you can run this in debug mode by '`python run.py --debug`
+6. (optional) For sample data setup, navigate to /vagrant/catalog/catalogapp/models directory and run `python db_sampledata.py`. This creates 3 sports categories with a couple of items each in catalog.db
+7. Navigate to the catalog directory: `cd /vagrant/catalog`
+8. Start the server: `python run.py`. [Note: you can run this in debug mode by '`python run.py --debug`
 9. Navigate to it in your browser  at `localhost:5000`.  
 10. Browse, Add, Edit or Delete items in catalog
 
