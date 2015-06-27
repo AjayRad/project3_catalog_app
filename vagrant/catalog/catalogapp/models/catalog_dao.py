@@ -7,11 +7,8 @@ from config import SQLALCHEMY_DATABASE_URI
 
 def db_init():
     engine = create_engine(SQLALCHEMY_DATABASE_URI)
-    # engine = create_engine('sqlite:///catalogapp/models/catalog.db')
-    # engine = create_engine('sqlite:///catalog.db')
     Base.metadata.bind = engine
     dbsession = sessionmaker(bind=engine)
-
     # dbsession() instance establishes all conversations with the database
     # and represents a "staging zone" for all the objects loaded into the
     # database session object. Any change made against the objects in the

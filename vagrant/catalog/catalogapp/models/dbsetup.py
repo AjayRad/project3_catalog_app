@@ -64,8 +64,5 @@ class ProdItem(Base):
         }
 
 
-# engine = create_engine('sqlite:///catalogapp/models/catalog.db')
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
-# engine = create_engine('sqlite:///catalog.db')
-
 Base.metadata.create_all(engine)
