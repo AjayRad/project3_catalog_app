@@ -2,11 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dbsetup import ProdCat, Base, ProdItem, User
 from flask import current_app
+from config import SQLALCHEMY_DATABASE_URI
 
 
 def db_init():
-    db_location = current_app.config['SQLALCHEMY_DATABASE_URI']
-    engine = create_engine(db_location)
+    engine = create_engine(SQLALCHEMY_DATABASE_URI)
     # engine = create_engine('sqlite:///catalogapp/models/catalog.db')
     # engine = create_engine('sqlite:///catalog.db')
     Base.metadata.bind = engine
