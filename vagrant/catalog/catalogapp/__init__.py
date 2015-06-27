@@ -5,6 +5,7 @@ app.config.from_object('config')
 from catalogapp import views
 
 if not app.debug:
+    # Setup logging for application
     import logging
     from logging.handlers import RotatingFileHandler
 

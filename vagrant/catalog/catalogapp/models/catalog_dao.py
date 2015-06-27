@@ -90,7 +90,7 @@ def update_product_details(category_id, product_id,
         # Commit updates to DB
         session.commit()
     except Exception as e:
-        print "db error", e
+        current_app.logger.error(e, exc_info=True)
         # rollback updates if commit fails
         session.rollback()
         session.flush()
@@ -114,8 +114,8 @@ def add_product(category_id, product_name_new, product_desc_new=None,
         # Commit changes to DB
         session.commit()
     except Exception as e:
-        print"db error", e
-        # If commit fails, rollback changes from DB
+        current_app.logger.error(e, exc_info=True)
+        # If commit fails, rollback changes from db
         session.rollback()
         session.flush()
         success = False
@@ -133,6 +133,7 @@ def del_product_details(category_id, product_id):
         # Commit changes to DB
         session.commit()
     except Exception as e:
+        current_app.logger.error(e, exc_info=True)
         # if commit fails, rollback changes from DB
         session.rollback()
         session.flush()
@@ -167,7 +168,7 @@ def add_user(social_id, nickname, email):
     try:
         session.commit()
     except Exception as e:
-        print e
+        current_app.logger.error(e)
         session.rollback()
         session.flush()
         success = False
