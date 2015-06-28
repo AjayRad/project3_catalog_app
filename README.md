@@ -20,3 +20,4 @@ Simple catalog CRUD app with Flask
 9. Navigate to it in your browser  at `localhost:5000`.  
 10. Browse, Add, Edit or Delete items in catalog
 
+See py_req.txt for required python librarires for running the catalog app
