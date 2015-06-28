@@ -209,8 +209,11 @@ def edit_product_details(category_id, product_id):
                                  category_id=category_id,
                                  product_id=product_id)))
     else:
+        product_details = catalog_dao.get_product_details(category_id,
+                                                          product_id)
         return (render_template('edit_product_details.html',
-                category_id=category_id, product_id=product_id))
+                category_id=category_id, product_details=product_details,
+                product_id=product_id))
 
 
 @app.route('/catalog/<int:category_id>/products/<int:product_id>/delete',
