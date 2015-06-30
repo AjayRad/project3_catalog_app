@@ -123,6 +123,34 @@ def products_by_catg(category_id):
                            all_categories=all_categories)
 
 
+@app.route('/catalog/add',
+           methods=['GET', 'POST'])
+@login_required
+def add_category():
+    ''' Allows user to add a category to catalog.
+    User needs to be logged in.
+    Will be setup of the owner for this category
+    Input param: none/blank
+    '''
+    # Capture category details entered on form
+    if request.method == 'POST':
+        if request.form['name']:
+            catg_name_new = request.form['name']
+        if request.form['desc']:
+            catg_desc_new = request.form['desc']
+        catg_owner_id = int(current_user.get_id())
+        # Call add catg query in catalog_dao with given data
+        success = (catalog_dao.add_category(catg_name_new, catg_desc_new,
+                   catg_owner_id))
+        if success:
+            flash(" Success ! : Category Added. You are the Category Owner")
+        else:
+            flash("OOPS! did not add category. db error. Contact admin")
+        return (redirect(url_for('get_categories')))
+    else:
+        return (render_template('add_category.html'))
+
+
 @app.route('/catalog/<int:category_id>/products/add',
            methods=['GET', 'POST'])
 @login_required

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+  <div class="container">
+    <h2> Add New Category </h2>
+    <form class="form-horizontal pull-left" role="form" method='POST' enctype='multipart/form-data' action='/catalog/add'>
+    
+        <div class="form-group">
+            <label for="inputTitle" class="col-sm-3 control-label">Category Title</label>
+            <div class="col-md-9">
+            <input name="name" type="text" class="form-control" id="inputTitle" placeholder="Title (Cannot be blank)">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputDesc" class="col-sm-3 control-label">Category Description</label>
+            <div class="col-md-9">
+            <input name="desc" type="text" class="form-control" id="inputDesc" placeholder="Description">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-6">
+            <button class="btn btn-md btn-success btn-block" type="submit">Add Category</button>
+            <br><a href = "{{url_for('get_categories')}}"> Cancel </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -64,6 +64,30 @@ def get_product_details(category_id, product_id):
     return product_details
 
 
+def add_category(catg_name_new, catg_desc_new,
+                 catg_owner_id):
+    '''
+    mandatory input parameter: new category name.
+    Optional parameters include other category details.
+    SQLAlchemy query adds new category to prod_category table.
+    '''
+    session = db_init()
+    new_catg = ProdCat(name=catg_name_new, desc=catg_desc_new,
+                       owner_id=catg_owner_id)
+    session.add(new_catg)
+    success = True
+    try:
+        # Commit changes to DB
+        session.commit()
+    except Exception as e:
+        current_app.logger.error(e, exc_info=True)
+        # If commit fails, rollback changes from db
+        session.rollback()
+        session.flush()
+        success = False
+    return success
+
+
 def update_product_details(category_id, product_id,
                            product_name_new=None, product_desc_new=None,
                            product_price_new=None, product_feat_new=None):
