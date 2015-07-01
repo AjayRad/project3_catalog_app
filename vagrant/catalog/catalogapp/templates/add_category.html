@@ -3,7 +3,7 @@
 
   <div class="container">
     <h2> Add New Category </h2>
-    <form class="form-horizontal pull-left" role="form" method='POST' enctype='multipart/form-data' action='/catalog/add'>
+    <form class="form-horizontal pull-left" role="form" method='POST' enctype='multipart/form-data' action='/catalog/add' id="addCategory">
     
         <div class="form-group">
             <label for="inputTitle" class="col-sm-3 control-label">Category Title</label>
@@ -19,11 +19,10 @@
         </div>
         <div class="form-group">
             <div class="col-md-6">
-            <button class="btn btn-md btn-success btn-block" type="submit">Add Category</button>
+            <button id="addCatg" class="btn btn-md btn-success btn-block" type="submit">Add Category</button>
             <br><a href = "{{url_for('get_categories')}}"> Cancel </a>
             </div>
         </div>
     </form>
 </div>
-
 {% endblock %}

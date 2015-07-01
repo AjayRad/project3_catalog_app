@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="jumbotron">
-  <h2>Featured Items </h2>
+  <h3>Featured Items </h3>
       <ul class="list-group">
         {% for product in products %}   
       <li class="list-group-item"> <a href ='/catalog/{{product.prdcat_id}}/products/{{product.id}}' > {{product.prdname}} </a> </li>
       {% endfor %}
+  <h3>Category Management </h3>
+     <ul class="list-group">
+        <li class="list-group-item"> <a href ='/catalog/add' >Add New Category </a> </li>
 </div>
 {% endblock%}

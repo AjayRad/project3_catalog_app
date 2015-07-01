@@ -120,6 +120,7 @@ def products_by_catg(category_id):
     all_categories = catalog_dao.get_all_categories()
     return render_template('products.html',
                            products=products,
+                           category_id=category_id,
                            all_categories=all_categories)
 
 
