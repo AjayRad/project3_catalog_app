@@ -34,7 +34,6 @@
             <a href="{{ url_for('logout') }}" class="btn btn-danger navbar-btn">Logout</a>>
               {% else %}
                 <span class="label label-info">Hi Guest!</span> 
-                <a href="{{ url_for('oauth_authorize', provider='facebook') }}" class="btn btn-sm btn-social btn-facebook"><i class="fa fa-facebook"></i>Login with Facebook</a>
                 <a href="{{ url_for('oauth_authorize', provider='google') }}" class="btn btn-sm btn-social btn-google"><i class="fa fa-google-plus"></i>Login with Google</a>
             
               {% endif %}</li>

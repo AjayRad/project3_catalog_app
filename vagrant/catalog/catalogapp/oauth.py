@@ -1,6 +1,7 @@
 from rauth import OAuth2Service
-from flask import current_app, url_for, request, redirect, session
-import json, urllib2
+from flask import current_app, url_for, request, redirect
+import json
+import urllib2
 
 
 class OAuthSignIn(object):
@@ -30,7 +31,8 @@ class OAuthSignIn(object):
                 provider = provider_class()
                 self.providers[provider.provider_name] = provider
         return self.providers[provider_name]
-
+'''
+disabling FB sign in for ver 1.0 of the app
 
 class FacebookSignIn(OAuthSignIn):
     def __init__(self):
@@ -67,6 +69,8 @@ class FacebookSignIn(OAuthSignIn):
                                             # is used instead
             me.get('email')
         )
+
+'''
 
 
 class GoogleSignIn(OAuthSignIn):
