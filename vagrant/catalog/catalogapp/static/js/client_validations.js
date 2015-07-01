@@ -11,10 +11,9 @@ $(document).ready(function () {
         var product_name = document.getElementById('inputTitle').value;
         
         if (product_name.length == 0) {
-            alert("Hey there - Product Name cannot be blank. Please name it ! ");
+            alert("Hey there - Category Name cannot be blank. Please name it ! ");
             return false;
-        } 
+        }
     });
-
 });
 
