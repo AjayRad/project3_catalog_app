@@ -3,8 +3,8 @@ Simple catalog CRUD app with Flask
 ### About
 1. This is a simple Flask based web application that allows CRUD application on a catalog. The catalog contains multiple categories and each category can have multiple products associated with it. 
 2. Users can browse various categories and products and read tru the product details (Item name, description, price).
-3. Authentication: Add, Edit and delete operations can only be performed by users who are looged into the system using. Users can autenticate themselves via two oauth  - google or facebook. 
-4. Autherization: After logining in, only users who are seup as category owners can add,edit or delete product items from their categories.
+3. Authentication: Add, Edit and delete operations can only be performed by users who are looged into the system using. Users can autenticate themselves via one oauth  - google . 
+4. Autherization: After logining in, only users who are seup as category owners can add,edit or delete product items from their categories. New users can create their own categories (and by default they become the category owner). They can then add/edit/delete products within their category
 5. The application also has two JSON endpoints that return data in JSON format   (a) JSON endpoint for all categories in the catalog :localhost:5000/catalog/categories/JSON  (b) JSON endpoint for all products within a category : localhost:5000/catalog/<int:category_id>/products/JSON
 
 ### Steps to run this application: 
@@ -20,4 +20,6 @@ Simple catalog CRUD app with Flask
 9. Navigate to it in your browser  at `localhost:5000`.  
 10. Browse, Add, Edit or Delete items in catalog
 
-See py_req.txt for required python librarires for running the catalog app
+#### Requirements
+1. See py_req.txt for required python librarires for running the catalog app
+2. Front end: Bootstrap 3.0 (components, CSS, JS) and Font Awesome
